@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sổ quỹ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --paper: #F6F2E7;
+    --paper-line: #DED2AE;
+    --ink: #1E3A2B;
+    --ink-soft: #4A5C50;
+    --ink-faint: #8B9186;
+    --paid: #2F6F4E;
+    --paid-bg: #E4EFE3;
+    --unpaid: #A6431B;
+    --unpaid-bg: #F3E4D8;
+    --gold: #B08A2E;
+    --card: #FFFDF7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:680px;
+    margin:0 auto;
+    padding:32px 20px 80px;
+  }
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:2px solid var(--ink);
+  }
+  header .eyebrow{
+    font-size:13px;
+    color:var(--gold);
+    letter-spacing:0.5px;
+    margin:0 0 4px;
+  }
+  header h1{
+    font-family:'Spectral',serif;
+    font-weight:600;
+    font-size:30px;
+    margin:0;
+    color:var(--ink);
+  }
+  header .sub{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--paper-line);
+    border:1px solid var(--paper-line);
+    margin-bottom:28px;
+  }
+  .stat{
+    background:var(--card);
+    padding:16px 10px;
+    text-align:center;
+  }
+  .stat .num{
+    font-family:'Spectral',serif;
+    font-size:22px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .stat .label{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    padding:18px;
+    margin-bottom:24px;
+  }
+  .panel h2{
+    font-family:'Spectral',serif;
+    font-size:17px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .panel .hint{
+    font-size:13px;
+    color:var(--ink-faint);
+    margin:0 0 14px;
+  }
+  .form-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+  .form-row input{
+    flex:1;
+    min-width:110px;
+    padding:9px 10px;
+    border:1px solid var(--paper-line);
+    background:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    border-radius:4px;
+  }
+  .form-row input:focus{
+    outline:none;
+    border-color:var(--gold);
+  }
+  .form-actions{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    border-radius:4px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    padding:9px 16px;
+  }
+  button:hover{ background:#2C4B3A; }
+  button.secondary{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--paper-line);
+  }
+  button.secondary:hover{ border-color:var(--ink); }
+  .err{
+    color:var(--unpaid);
+    font-size:13px;
+    margin:2px 0 8px;
+    display:none;
+  }
+
+  .search{
+    margin-bottom:14px;
+  }
+  .search input{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--paper-line);
+    background:#fff;
+    font-size:14px;
+    border-radius:4px;
+    font-family:'Inter',sans-serif;
+  }
+
+  .filters{
+    display:flex;
+    gap:6px;
+    margin-bottom:16px;
+  }
+  .filters button{
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--paper-line);
+    padding:6px 12px;
+    font-size:13px;
+  }
+  .filters button.active{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+
+  .list-panel{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+  }
+  .list-panel .head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:16px 18px 0;
+  }
+  .list-panel h2{
+    font-family:'Spectral',serif;
+    font-size:17px;
+    font-weight:600;
+    margin:0;
+  }
+  .list-panel .count{
+    font-size:13px;
+    color:var(--ink-faint);
+  }
+
+  .member{
+    border-top:1px solid var(--paper-line);
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:13px 18px;
+    cursor:pointer;
+  }
+  .row .name-wrap{
+    flex:1;
+    min-width:0;
+  }
+  .row .name{
+    font-size:15px;
+    color:var(--ink);
+  }
+  .row .last-date{
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-top:2px;
+  }
+  .row .amount{
+    font-size:13px;
+    color:var(--ink-soft);
+    min-width:64px;
+    text-align:right;
+    white-space:nowrap;
+  }
+  .badge{
+    font-size:12px;
+    font-weight:500;
+    padding:3px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge.paid{ background:var(--paid-bg); color:var(--paid); }
+  .badge.unpaid{ background:var(--unpaid-bg); color:var(--unpaid); }
+  .row .del{
+    background:transparent;
+    border:none;
+    color:var(--ink-faint);
+    font-size:16px;
+    padding:2px 4px;
+    line-height:1;
+  }
+  .row .del:hover{ color:var(--unpaid); }
+  .row .chevron{
+    color:var(--ink-faint);
+    font-size:12px;
+    transition:transform 0.15s;
+  }
+  .row .chevron.open{ transform:rotate(90deg); }
+
+  .history{
+    display:none;
+    background:var(--paper);
+    padding:4px 18px 12px 18px;
+  }
+  .history.open{ display:block; }
+  .history-item{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:6px 0;
+    border-top:1px solid var(--paper-line);
+  }
+  .history-item .lan{ color:var(--ink-faint); min-width:60px; }
+  .history-item .hdate{ flex:1; text-align:center; }
+  .history-item .hamount{ text-align:right; min-width:60px; }
+  .history-empty{
+    font-size:13px;
+    color:var(--ink-faint);
+    padding:8px 0;
+    font-style:italic;
+  }
+
+  .empty{
+    padding:40px 18px;
+    text-align:center;
+    color:var(--ink-faint);
+    font-size:14px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:20px;
+    font-size:12px;
+    color:var(--ink-faint);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Ban quỹ</p>
+    <h1>Sổ quỹ</h1>
+    <p class="sub">Theo dõi thành viên đã nộp quỹ</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num" id="stat-total-people">0</div>
+      <div class="label">Thành viên</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="stat-paid-people">0</div>
+      <div class="label">Đã nộp</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="stat-total-money">0</div>
+      <div class="label">Tổng thu (nghìn đ)</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Ghi nhận nộp quỹ</h2>
+    <p class="hint">Nhập tên mới để thêm thành viên. Nhập lại tên đã có sẵn để tự động ghi nhận thêm một lần nộp mới cho người đó.</p>
+    <div class="form-row">
+      <input type="text" id="input-name" placeholder="Họ và tên" />
+      <input type="number" id="input-amount" placeholder="Số tiền (nghìn đ)" min="0" />
+      <input type="date" id="input-date" />
+    </div>
+    <p class="err" id="form-error"></p>
+    <div class="form-actions">
+      <button id="btn-add">Ghi nhận</button>
+      <button class="secondary" id="btn-add-only-name">Chỉ thêm tên (chưa nộp)</button>
+    </div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="input-search" placeholder="Tìm theo tên..." />
+  </div>
+
+  <div class="filters">
+    <button class="active" data-filter="all">Tất cả</button>
+    <button data-filter="paid">Đã nộp</button>
+    <button data-filter="unpaid">Chưa nộp</button>
+  </div>
+
+  <div class="list-panel">
+    <div class="head">
+      <h2>Danh sách thành viên</h2>
+      <span class="count" id="list-count">0 người</span>
+    </div>
+    <div id="list-body"></div>
+  </div>
+
+  <footer>Dữ liệu được lưu tự động trên tài khoản của bạn.</footer>
+</div>
+
+<script>
+let members = [];
+let filter = 'all';
+let searchTerm = '';
+let openIds = {};
+const STORAGE_KEY = 'so-quy-members-v2';
+
+function fmtMoney(n){
+  return new Intl.NumberFormat('vi-VN').format(Math.round(n));
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+function todayISO(){
+  const d = new Date();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear() + '-' + mm + '-' + dd;
+}
+
+async function loadMembers(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    members = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    members = [];
+  }
+  document.getElementById('input-date').value = todayISO();
+  render();
+}
+
+async function saveMembers(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(members), false);
+  }catch(e){
+    console.error('Không lưu được dữ liệu', e);
+  }
+}
+
+function findByName(name){
+  const norm = name.trim().toLowerCase();
+  return members.find(m => m.name.trim().toLowerCase() === norm);
+}
+
+function totalOf(m){
+  return m.payments.reduce((s,p)=> s + (Number(p.amount)||0), 0);
+}
+function lastPaymentOf(m){
+  if(m.payments.length === 0) return null;
+  return m.payments.reduce((a,b)=> (a.date > b.date ? a : b));
+}
+
+function render(){
+  const total = members.length;
+  const paidList = members.filter(m => m.payments.length > 0);
+  const totalMoney = members.reduce((s,m)=> s + totalOf(m), 0);
+
+  document.getElementById('stat-total-people').textContent = total;
+  document.getElementById('stat-paid-people').textContent = paidList.length;
+  document.getElementById('stat-total-money').textContent = fmtMoney(totalMoney);
+
+  let visible = members.filter(m=>{
+    const paid = m.payments.length > 0;
+    if(filter === 'paid' && !paid) return false;
+    if(filter === 'unpaid' && paid) return false;
+    if(searchTerm && !m.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
+
+  document.getElementById('list-count').textContent = visible.length + ' người';
+
+  const body = document.getElementById('list-body');
+  body.innerHTML = '';
+
+  if(visible.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = members.length === 0
+      ? 'Chưa có thành viên nào. Thêm người đầu tiên ở trên.'
+      : 'Không tìm thấy thành viên phù hợp.';
+    body.appendChild(empty);
+    return;
+  }
+
+  visible.forEach(m=>{
+    const paid = m.payments.length > 0;
+    const last = lastPaymentOf(m);
+    const wrapEl = document.createElement('div');
+    wrapEl.className = 'member';
+
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const chevron = document.createElement('span');
+    chevron.className = 'chevron' + (openIds[m.id] ? ' open' : '');
+    chevron.textContent = '\u203A';
+
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'name-wrap';
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = m.name;
+    nameWrap.appendChild(name);
+    if(last){
+      const lastDate = document.createElement('div');
+      lastDate.className = 'last-date';
+      lastDate.textContent = 'Lần ' + m.payments.length + ' \u00b7 ' + fmtDate(last.date);
+      nameWrap.appendChild(lastDate);
+    }
+
+    const amount = document.createElement('div');
+    amount.className = 'amount';
+    const t = totalOf(m);
+    amount.textContent = t ? fmtMoney(t) + 'k' : '';
+
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + (paid ? 'paid' : 'unpaid');
+    badge.textContent = paid ? 'Đã nộp' : 'Chưa nộp';
+
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.setAttribute('aria-label','Xóa thành viên');
+    del.innerHTML = '&times;';
+    del.onclick = (e)=>{ e.stopPropagation(); deleteMember(m.id); };
+
+    row.appendChild(chevron);
+    row.appendChild(nameWrap);
+    row.appendChild(amount);
+    row.appendChild(badge);
+    row.appendChild(del);
+    row.onclick = ()=>{ openIds[m.id] = !openIds[m.id]; render(); };
+
+    const history = document.createElement('div');
+    history.className = 'history' + (openIds[m.id] ? ' open' : '');
+    if(m.payments.length === 0){
+      const he = document.createElement('div');
+      he.className = 'history-empty';
+      he.textContent = 'Chưa ghi nhận lần nộp nào.';
+      history.appendChild(he);
+    }else{
+      const sorted = [...m.payments].sort((a,b)=> a.date < b.date ? -1 : 1);
+      sorted.forEach((p, idx)=>{
+        const hi = document.createElement('div');
+        hi.className = 'history-item';
+        const lan = document.createElement('span');
+        lan.className = 'lan';
+        lan.textContent = 'Lần ' + (idx+1);
+        const hdate = document.createElement('span');
+        hdate.className = 'hdate';
+        hdate.textContent = fmtDate(p.date);
+        const hamount = document.createElement('span');
+        hamount.className = 'hamount';
+        hamount.textContent = p.amount ? fmtMoney(p.amount) + 'k' : '-';
+        hi.appendChild(lan);
+        hi.appendChild(hdate);
+        hi.appendChild(hamount);
+        history.appendChild(hi);
+      });
+    }
+
+    wrapEl.appendChild(row);
+    wrapEl.appendChild(history);
+    body.appendChild(wrapEl);
+  });
+}
+
+function deleteMember(id){
+  members = members.filter(x=>x.id!==id);
+  saveMembers();
+  render();
+}
+
+function showError(msg){
+  const err = document.getElementById('form-error');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+function clearError(){
+  document.getElementById('form-error').style.display = 'none';
+}
+
+function recordPayment(){
+  const nameInput = document.getElementById('input-name');
+  const amountInput = document.getElementById('input-amount');
+  const dateInput = document.getElementById('input-date');
+  const name = nameInput.value.trim();
+
+  if(!name){
+    showError('Nhập tên thành viên trước đã.');
+    nameInput.focus();
+    return;
+  }
+  if(!amountInput.value){
+    showError('Nhập số tiền để ghi nhận lần nộp nhé.');
+    amountInput.focus();
+    return;
+  }
+  clearError();
+
+  const date = dateInput.value || todayISO();
+  const amount = Number(amountInput.value);
+  let m = findByName(name);
+  if(!m){
+    m = { id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), name: name, payments: [] };
+    members.push(m);
+  }
+  m.payments.push({ amount: amount, date: date });
+  openIds[m.id] = true;
+
+  nameInput.value = '';
+  amountInput.value = '';
+  dateInput.value = todayISO();
+  saveMembers();
+  render();
+  nameInput.focus();
+}
+
+function addNameOnly(){
+  const nameInput = document.getElementById('input-name');
+  const name = nameInput.value.trim();
+  if(!name){
+    showError('Nhập tên thành viên trước đã.');
+    nameInput.focus();
+    return;
+  }
+  if(findByName(name)){
+    showError('Tên này đã có trong danh sách rồi.');
+    return;
+  }
+  clearError();
+  members.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), name: name, payments: [] });
+  nameInput.value = '';
+  saveMembers();
+  render();
+  nameInput.focus();
+}
+
+document.getElementById('btn-add').addEventListener('click', recordPayment);
+document.getElementById('btn-add-only-name').addEventListener('click', addNameOnly);
+document.getElementById('input-name').addEventListener('keydown', e=>{
+  if(e.key==='Enter') recordPayment();
+  clearError();
+});
+document.getElementById('input-amount').addEventListener('keydown', e=>{
+  if(e.key==='Enter') recordPayment();
+  clearError();
+});
+document.getElementById('input-search').addEventListener('input', e=>{
+  searchTerm = e.target.value;
+  render();
+});
+document.querySelectorAll('.filters button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    filter = btn.dataset.filter;
+    render();
+  });
+});
+
+loadMembers();
+</script>
+</body>
+</html>
