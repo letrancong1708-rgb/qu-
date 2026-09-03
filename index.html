@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sổ quỹ</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#F6F2E7;
+  --paper-line:#DED2AE;
+  --ink:#1E3A2B;
+  --ink-soft:#4A5C50;
+  --ink-faint:#8B9186;
+  --paid:#2F6F4E;
+  --paid-bg:#E4EFE3;
+  --unpaid:#A6431B;
+  --unpaid-bg:#F3E4D8;
+  --gold:#B08A2E;
+  --card:#FFFDF7;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{
+  max-width:680px;
+  margin:auto;
+  padding:32px 20px 80px;
+}
+
+header{
+  text-align:center;
+  margin-bottom:28px;
+  padding-bottom:20px;
+  border-bottom:2px solid var(--ink);
+}
+
+.eyebrow{
+  font-size:13px;
+  color:var(--gold);
+  letter-spacing:.5px;
+  margin:0 0 4px;
+}
+
+header h1{
+  font-family:'Spectral',serif;
+  font-size:30px;
+  margin:0;
+}
+
+.sub{
+  font-size:14px;
+  color:var(--ink-soft);
+  margin-top:6px;
+}
+
+.conn{
+  font-size:12px;
+  margin-top:10px;
+}
+
+.conn.ok{
+  color:var(--paid);
+}
+
+.conn.bad{
+  color:var(--unpaid);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--paper-line);
+  border:1px solid var(--paper-line);
+  margin-bottom:28px;
+}
+
+.stat{
+  background:var(--card);
+  padding:16px 10px;
+  text-align:center;
+}
+
+.stat .num{
+  font-family:'Spectral',serif;
+  font-size:22px;
+  font-weight:600;
+}
+
+.stat .label{
+  font-size:12px;
+  color:var(--ink-soft);
+  margin-top:2px;
+}
+
+.panel{
+  background:var(--card);
+  border:1px solid var(--paper-line);
+  padding:18px;
+  margin-bottom:24px;
+}
+
+.panel h2,
+.list-panel h2{
+  font-family:'Spectral',serif;
+  font-size:17px;
+  margin:0 0 4px;
+}
+
+.hint{
+  font-size:13px;
+  color:var(--ink-faint);
+  margin:0 0 14px;
+}
+
+.form-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+
+.form-row input{
+  flex:1;
+  min-width:110px;
+  padding:10px;
+  border:1px solid var(--paper-line);
+  background:white;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  border-radius:4px;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+.form-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+button{
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  border-radius:4px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper);
+  padding:9px 16px;
+}
+
+button:hover{
+  background:#2C4B3A;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+button.secondary{
+  background:transparent;
+  color:var(--ink);
+  border-color:var(--paper-line);
+}
+
+button.complete{
+  background:#8A681D;
+  border-color:#8A681D;
+}
+
+button.complete:hover{
+  background:#705417;
+}
+
+.err{
+  display:none;
+  color:var(--unpaid);
+  font-size:13px;
+  margin:5px 0 10px;
+}
+
+.search{
+  margin-bottom:14px;
+}
+
+.search input{
+  width:100%;
+  padding:10px;
+  border:1px solid var(--paper-line);
+  background:white;
+  font-size:14px;
+  border-radius:4px;
+}
+
+.filters{
+  display:flex;
+  gap:6px;
+  margin-bottom:12px;
+}
+
+.filters button{
+  background:transparent;
+  color:var(--ink-soft);
+  border-color:var(--paper-line);
+  padding:6px 12px;
+  font-size:13px;
+}
+
+.filters button.active{
+  background:var(--ink);
+  color:var(--paper);
+  border-color:var(--ink);
+}
+
+.tools{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+
+.tools button{
+  font-size:12px;
+  padding:7px 12px;
+}
+
+.list-panel{
+  background:var(--card);
+  border:1px solid var(--paper-line);
+}
+
+.list-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 18px;
+}
+
+.count{
+  font-size:13px;
+  color:var(--ink-faint);
+}
+
+.member{
+  border-top:1px solid var(--paper-line);
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:13px 18px;
+  cursor:pointer;
+}
+
+.row:hover{
+  background:#fffaf0;
+}
+
+.name-wrap{
+  flex:1;
+  min-width:0;
+}
+
+.name{
+  font-size:15px;
+  word-break:break-word;
+}
+
+.last-date{
+  font-size:12px;
+  color:var(--ink-faint);
+  margin-top:2px;
+}
+
+.amount{
+  font-size:13px;
+  color:var(--ink-soft);
+  min-width:55px;
+  text-align:right;
+  white-space:nowrap;
+}
+
+.badge{
+  font-size:12px;
+  padding:3px 9px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+.badge.paid{
+  background:var(--paid-bg);
+  color:var(--paid);
+}
+
+.badge.unpaid{
+  background:var(--unpaid-bg);
+  color:var(--unpaid);
+}
+
+.chevron{
+  color:var(--ink-faint);
+  transition:.15s;
+}
+
+.chevron.open{
+  transform:rotate(90deg);
+}
+
+.del{
+  background:transparent!important;
+  border:none!important;
+  color:var(--ink-faint)!important;
+  font-size:18px!important;
+  padding:2px 4px!important;
+}
+
+.del:hover{
+  color:var(--unpaid)!important;
+}
+
+.history{
+  display:none;
+  background:var(--paper);
+  padding:4px 18px 12px;
+}
+
+.history.open{
+  display:block;
+}
+
+.history-title{
+  font-size:12px;
+  color:var(--gold);
+  font-weight:600;
+  margin:8px 0;
+}
+
+.history-item{
+  display:flex;
+  font-size:13px;
+  color:var(--ink-soft);
+  padding:7px 0;
+  border-top:1px solid var(--paper-line);
+}
+
+.history-item .lan{
+  min-width:60px;
+  color:var(--ink-faint);
+}
+
+.history-item .date{
+  flex:1;
+  text-align:center;
+}
+
+.history-item .money{
+  min-width:60px;
+  text-align:right;
+}
+
+.round-history{
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px dashed var(--paper-line);
+}
+
+.round-item{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  font-size:12px;
+  color:var(--ink-soft);
+}
+
+.empty{
+  padding:40px 18px;
+  text-align:center;
+  color:var(--ink-faint);
+  font-size:14px;
+}
+
+.setup{
+  background:#FFF8E8;
+  border:1px solid var(--gold);
+  padding:15px 18px;
+  margin-bottom:24px;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--ink-soft);
+}
+
+.setup strong{
+  color:var(--ink);
+}
+
+footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:12px;
+  color:var(--ink-faint);
+}
+
+.complete-box{
+  background:#FFF8E8;
+  border:1px solid var(--gold);
+  padding:14px;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.complete-info{
+  flex:1;
+}
+
+.complete-title{
+  font-weight:600;
+  font-size:14px;
+}
+
+.complete-text{
+  font-size:12px;
+  color:var(--ink-soft);
+  margin-top:3px;
+}
+
+@media(max-width:520px){
+
+  .wrap{
+    padding:22px 12px 60px;
+  }
+
+  header h1{
+    font-size:27px;
+  }
+
+  .form-row{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .form-row input{
+    width:100%;
+  }
+
+  .form-actions button{
+    flex:1;
+  }
+
+  .complete-box{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .complete-box button{
+    width:100%;
+  }
+
+  .row{
+    padding:12px 9px;
+    gap:6px;
+  }
+
+  .amount{
+    min-width:45px;
+    font-size:12px;
+  }
+
+  .badge{
+    font-size:11px;
+    padding:3px 7px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<header>
+
+  <p class="eyebrow">BAN QUỸ</p>
+
+  <h1>Sổ quỹ</h1>
+
+  <p class="sub">
+    Theo dõi thành viên nộp quỹ
+  </p>
+
+  <p class="conn" id="conn-status">
+    Đang kết nối Firebase...
+  </p>
+
+</header>
+
+
+<div class="setup" id="setup-notice">
+
+  <strong>Chưa cấu hình Firebase.</strong><br>
+
+  Hãy thay phần
+  <code>firebaseConfig</code>
+  trong code bằng cấu hình Firebase của bạn.
+
+</div>
+
+
+<!-- THỐNG KÊ -->
+
+<div class="stats">
+
+  <div class="stat">
+    <div class="num" id="stat-total-people">0</div>
+    <div class="label">Thành viên</div>
+  </div>
+
+  <div class="stat">
+    <div class="num" id="stat-paid-people">0</div>
+    <div class="label">Đã nộp đợt này</div>
+  </div>
+
+  <div class="stat">
+    <div class="num" id="stat-total-money">0</div>
+    <div class="label">Tổng thu (nghìn đ)</div>
+  </div>
+
+</div>
+
+
+<!-- NHẬP QUỸ -->
+
+<div class="panel">
+
+  <h2>Ghi nhận nộp quỹ</h2>
+
+  <p class="hint">
+    Nhập tên, số tiền và ngày nộp.
+    Mỗi lần ghi nhận sẽ được lưu vào đợt hiện tại.
+  </p>
+
+  <div class="form-row">
+
+    <input
+      type="text"
+      id="input-name"
+      placeholder="Họ và tên"
+      autocomplete="off"
+    >
+
+    <input
+      type="number"
+      id="input-amount"
+      placeholder="Số tiền (nghìn đ)"
+      min="0"
+      step="1"
+    >
+
+    <input
+      type="date"
+      id="input-date"
+    >
+
+  </div>
+
+  <p class="err" id="form-error"></p>
+
+  <div class="form-actions">
+
+    <button id="btn-add">
+      Ghi nhận
+    </button>
+
+    <button
+      class="secondary"
+      id="btn-add-only-name"
+    >
+      Chỉ thêm tên
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- HOÀN THÀNH ĐỢT -->
+
+<div class="complete-box">
+
+  <div class="complete-info">
+
+    <div class="complete-title">
+      Hoàn thành đợt thu hiện tại
+    </div>
+
+    <div class="complete-text">
+      Lưu tiền của mọi người và chuyển tất cả về trạng thái "Chưa nộp" để bắt đầu đợt mới.
+    </div>
+
+  </div>
+
+  <button
+    class="complete"
+    id="btn-complete-all"
+  >
+    Hoàn thành tất cả
+  </button>
+
+</div>
+
+
+<!-- TÌM KIẾM -->
+
+<div class="search">
+
+  <input
+    type="text"
+    id="input-search"
+    placeholder="Tìm theo tên..."
+    autocomplete="off"
+  >
+
+</div>
+
+
+<!-- BỘ LỌC -->
+
+<div class="filters">
+
+  <button
+    class="active"
+    data-filter="all"
+  >
+    Tất cả
+  </button>
+
+  <button data-filter="paid">
+    Đã nộp
+  </button>
+
+  <button data-filter="unpaid">
+    Chưa nộp
+  </button>
+
+</div>
+
+
+<!-- CÔNG CỤ -->
+
+<div class="tools">
+
+  <button
+    class="secondary"
+    id="btn-export"
+  >
+    Xuất CSV
+  </button>
+
+</div>
+
+
+<!-- DANH SÁCH -->
+
+<div class="list-panel">
+
+  <div class="list-head">
+
+    <h2>Danh sách thành viên</h2>
+
+    <span
+      class="count"
+      id="list-count"
+    >
+      0 người
+    </span>
+
+  </div>
+
+  <div id="list-body"></div>
+
+</div>
+
+
+<footer>
+  Dữ liệu được đồng bộ realtime qua Firebase.
+</footer>
+
+</div>
+
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
+<script>
+
+/* ==========================================================
+   FIREBASE CONFIG
+   ========================================================== */
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCTqfk4Wifiqh4AZX7YRdGVwIB3XaWbhEk",
+
+  authDomain: "so-quy-10a6.firebaseapp.com",
+
+  projectId: "so-quy-10a6",
+
+  storageBucket: "so-quy-10a6.firebasestorage.app",
+
+  messagingSenderId: "615608421946",
+
+  appId: "1:615608421946:web:32ea99a694a7b98009af03",
+
+  measurementId: "G-B1KY9EW7V3"
+
+};
+
+
+/* ==========================================================
+   BIẾN
+   ========================================================== */
+
+let db = null;
+
+let members = [];
+
+let filter = "all";
+
+let searchTerm = "";
+
+let openIds = {};
+
+
+/* ==========================================================
+   KIỂM TRA CONFIG
+   ========================================================== */
+
+const IS_CONFIGURED =
+  firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+  firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+
+
+/* ==========================================================
+   NGÀY HÔM NAY
+   ========================================================== */
+
+function todayISO(){
+
+  const d = new Date();
+
+  const month =
+    String(d.getMonth()+1)
+      .padStart(2,"0");
+
+  const day =
+    String(d.getDate())
+      .padStart(2,"0");
+
+  return (
+    d.getFullYear() +
+    "-" +
+    month +
+    "-" +
+    day
+  );
+
+}
+
+
+/* ==========================================================
+   FORMAT TIỀN
+   ========================================================== */
+
+function formatMoney(number){
+
+  return new Intl.NumberFormat("vi-VN")
+    .format(
+      Math.round(
+        Number(number) || 0
+      )
+    );
+
+}
+
+
+/* ==========================================================
+   FORMAT NGÀY
+   ========================================================== */
+
+function formatDate(date){
+
+  if(!date)
+    return "";
+
+  const p =
+    date.split("-");
+
+  if(p.length !== 3)
+    return date;
+
+  return (
+    p[2] +
+    "/" +
+    p[1] +
+    "/" +
+    p[0]
+  );
+
+}
+
+
+/* ==========================================================
+   CHUẨN HÓA TÊN
+   ========================================================== */
+
+function normalizeName(name){
+
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g," ");
+
+}
+
+
+/* ==========================================================
+   TRẠNG THÁI FIREBASE
+   ========================================================== */
+
+function setConnection(text, ok){
+
+  const el =
+    document.getElementById(
+      "conn-status"
+    );
+
+  el.textContent = text;
+
+  el.className =
+    "conn " +
+    (ok ? "ok" : "bad");
+
+}
+
+
+/* ==========================================================
+   TÌM THÀNH VIÊN
+   ========================================================== */
+
+function findMember(name){
+
+  const normalized =
+    normalizeName(name);
+
+  return members.find(
+    member =>
+      normalizeName(member.name)
+      === normalized
+  );
+
+}
+
+
+/* ==========================================================
+   TỔNG TIỀN TẤT CẢ
+   ========================================================== */
+
+function getTotal(member){
+
+  let total = 0;
+
+  /* Tiền các lần chưa hoàn thành */
+
+  member.payments.forEach(
+    payment => {
+
+      total +=
+        Number(payment.amount) || 0;
+
+    }
+  );
+
+
+  /* Tiền các đợt đã hoàn thành */
+
+  if(Array.isArray(member.rounds)){
+
+    member.rounds.forEach(
+      round => {
+
+        total +=
+          Number(round.amount) || 0;
+
+      }
+    );
+
+  }
+
+  return total;
+
+}
+
+
+/* ==========================================================
+   TIỀN ĐỢT HIỆN TẠI
+   ========================================================== */
+
+function getCurrentTotal(member){
+
+  return member.payments.reduce(
+    (total,payment) =>
+      total +
+      (Number(payment.amount) || 0),
+    0
+  );
+
+}
+
+
+/* ==========================================================
+   KHỞI TẠO FIREBASE
+   ========================================================== */
+
+function initFirebase(){
+
+  if(!IS_CONFIGURED){
+
+    setConnection(
+      "Chưa cấu hình Firebase",
+      false
+    );
+
+    document.getElementById(
+      "btn-add"
+    ).disabled = true;
+
+    document.getElementById(
+      "btn-add-only-name"
+    ).disabled = true;
+
+    document.getElementById(
+      "btn-complete-all"
+    ).disabled = true;
+
+    document.getElementById(
+      "btn-export"
+    ).disabled = true;
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "setup-notice"
+  ).style.display = "none";
+
+
+  try{
+
+    firebase.initializeApp(
+      firebaseConfig
+    );
+
+    db =
+      firebase.firestore();
+
+
+    setConnection(
+      "Đã kết nối Firebase",
+      true
+    );
+
+
+    listenMembers();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    setConnection(
+      "Lỗi Firebase: " +
+      error.message,
+      false
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   REALTIME FIRESTORE
+   ========================================================== */
+
+function listenMembers(){
+
+  db.collection("members")
+    .onSnapshot(
+
+      snapshot => {
+
+        members =
+          snapshot.docs.map(
+            doc => {
+
+              const data =
+                doc.data();
+
+              return {
+
+                id: doc.id,
+
+                name:
+                  data.name || "",
+
+                payments:
+                  Array.isArray(
+                    data.payments
+                  )
+                    ? data.payments
+                    : [],
+
+                rounds:
+                  Array.isArray(
+                    data.rounds
+                  )
+                    ? data.rounds
+                    : []
+
+              };
+
+            }
+          );
+
+
+        setConnection(
+          "Đã kết nối · realtime",
+          true
+        );
+
+
+        render();
+
+      },
+
+
+      error => {
+
+        console.error(error);
+
+        setConnection(
+          "Lỗi đọc Firestore: " +
+          error.message,
+          false
+        );
+
+      }
+
+    );
+
+}
+
+
+/* ==========================================================
+   RENDER
+   ========================================================== */
+
+function render(){
+
+  const totalPeople =
+    members.length;
+
+
+  /*
+    Đã nộp = có tiền trong ĐỢT HIỆN TẠI
+    Các đợt cũ không tính vào trạng thái
+  */
+
+  const paidPeople =
+    members.filter(
+      m =>
+        m.payments.length > 0
+    ).length;
+
+
+  /*
+    Tổng tiền = tất cả các đợt
+  */
+
+  const totalMoney =
+    members.reduce(
+      (sum,m) =>
+        sum + getTotal(m),
+      0
+    );
+
+
+  document.getElementById(
+    "stat-total-people"
+  ).textContent =
+    totalPeople;
+
+
+  document.getElementById(
+    "stat-paid-people"
+  ).textContent =
+    paidPeople;
+
+
+  document.getElementById(
+    "stat-total-money"
+  ).textContent =
+    formatMoney(totalMoney);
+
+
+  let visible =
+    members.filter(
+      member => {
+
+        const paid =
+          member.payments.length > 0;
+
+
+        if(
+          filter === "paid" &&
+          !paid
+        )
+          return false;
+
+
+        if(
+          filter === "unpaid" &&
+          paid
+        )
+          return false;
+
+
+        if(
+          searchTerm &&
+          !normalizeName(member.name)
+            .includes(
+              normalizeName(searchTerm)
+            )
+        )
+          return false;
+
+
+        return true;
+
+      }
+    );
+
+
+  visible.sort(
+    (a,b) =>
+      a.name.localeCompare(
+        b.name,
+        "vi"
+      )
+  );
+
+
+  document.getElementById(
+    "list-count"
+  ).textContent =
+    visible.length +
+    " người";
+
+
+  const body =
+    document.getElementById(
+      "list-body"
+    );
+
+
+  body.innerHTML = "";
+
+
+  if(visible.length === 0){
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+    empty.className =
+      "empty";
+
+    empty.textContent =
+      members.length === 0
+        ? "Chưa có thành viên nào."
+        : "Không tìm thấy thành viên.";
+
+    body.appendChild(empty);
+
+    return;
+
+  }
+
+
+  visible.forEach(
+    member => {
+
+      const paid =
+        member.payments.length > 0;
+
+
+      const container =
+        document.createElement(
+          "div"
+        );
+
+      container.className =
+        "member";
+
+
+      /* ==========================
+         ROW
+         ========================== */
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "row";
+
+
+      const arrow =
+        document.createElement(
+          "span"
+        );
+
+      arrow.className =
+        "chevron" +
+        (
+          openIds[member.id]
+            ? " open"
+            : ""
+        );
+
+      arrow.textContent = "›";
+
+
+      const nameWrap =
+        document.createElement(
+          "div"
+        );
+
+      nameWrap.className =
+        "name-wrap";
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+      name.className =
+        "name";
+
+      name.textContent =
+        member.name;
+
+
+      nameWrap.appendChild(
+        name
+      );
+
+
+      /*
+        Hiển thị tiền của đợt hiện tại
+      */
+
+      const currentTotal =
+        getCurrentTotal(member);
+
+
+      const lastDate =
+        member.payments.length > 0
+          ? member.payments[
+              member.payments.length - 1
+            ].date
+          : null;
+
+
+      if(lastDate){
+
+        const last =
+          document.createElement(
+            "div"
+          );
+
+        last.className =
+          "last-date";
+
+        last.textContent =
+          "Đợt hiện tại · " +
+          formatDate(lastDate);
+
+        nameWrap.appendChild(
+          last
+        );
+
+      }
+
+
+      const amount =
+        document.createElement(
+          "div"
+        );
+
+      amount.className =
+        "amount";
+
+      amount.textContent =
+        currentTotal
+          ? formatMoney(currentTotal) + "k"
+          : "";
+
+
+      const badge =
+        document.createElement(
+          "span"
+        );
+
+      badge.className =
+        "badge " +
+        (
+          paid
+            ? "paid"
+            : "unpaid"
+        );
+
+      badge.textContent =
+        paid
+          ? "Đã nộp"
+          : "Chưa nộp";
+
+
+      const del =
+        document.createElement(
+          "button"
+        );
+
+      del.className =
+        "del";
+
+      del.innerHTML =
+        "&times;";
+
+
+      del.onclick =
+        event => {
+
+          event.stopPropagation();
+
+          deleteMember(
+            member.id
+          );
+
+        };
+
+
+      row.appendChild(
+        arrow
+      );
+
+      row.appendChild(
+        nameWrap
+      );
+
+      row.appendChild(
+        amount
+      );
+
+      row.appendChild(
+        badge
+      );
+
+      row.appendChild(
+        del
+      );
+
+
+      row.onclick = () => {
+
+        openIds[member.id] =
+          !openIds[member.id];
+
+        render();
+
+      };
+
+
+      /* ==========================
+         HISTORY
+         ========================== */
+
+      const history =
+        document.createElement(
+          "div"
+        );
+
+      history.className =
+        "history" +
+        (
+          openIds[member.id]
+            ? " open"
+            : ""
+        );
+
+
+      /*
+        ĐỢT HIỆN TẠI
+      */
+
+      const currentTitle =
+        document.createElement(
+          "div"
+        );
+
+      currentTitle.className =
+        "history-title";
+
+      currentTitle.textContent =
+        "Đợt hiện tại";
+
+      history.appendChild(
+        currentTitle
+      );
+
+
+      if(member.payments.length === 0){
+
+        const empty =
+          document.createElement(
+            "div"
+          );
+
+        empty.style.fontSize =
+          "12px";
+
+        empty.style.color =
+          "var(--ink-faint)";
+
+        empty.textContent =
+          "Chưa nộp trong đợt này.";
+
+        history.appendChild(
+          empty
+        );
+
+      }
+
+      else{
+
+        const payments =
+          [...member.payments]
+            .sort(
+              (a,b) =>
+                a.date.localeCompare(
+                  b.date
+                )
+            );
+
+
+        payments.forEach(
+          (payment,index) => {
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+            item.className =
+              "history-item";
+
+
+            const lan =
+              document.createElement(
+                "span"
+              );
+
+            lan.className =
+              "lan";
+
+            lan.textContent =
+              "Lần " +
+              (index + 1);
+
+
+            const date =
+              document.createElement(
+                "span"
+              );
+
+            date.className =
+              "date";
+
+            date.textContent =
+              formatDate(
+                payment.date
+              );
+
+
+            const money =
+              document.createElement(
+                "span"
+              );
+
+            money.className =
+              "money";
+
+            money.textContent =
+              formatMoney(
+                payment.amount
+              ) +
+              "k";
+
+
+            item.appendChild(
+              lan
+            );
+
+            item.appendChild(
+              date
+            );
+
+            item.appendChild(
+              money
+            );
+
+
+            history.appendChild(
+              item
+            );
+
+          }
+        );
+
+      }
+
+
+      /*
+        CÁC ĐỢT ĐÃ HOÀN THÀNH
+      */
+
+      if(
+        Array.isArray(member.rounds) &&
+        member.rounds.length > 0
+      ){
+
+        const roundTitle =
+          document.createElement(
+            "div"
+          );
+
+        roundTitle.className =
+          "history-title";
+
+        roundTitle.textContent =
+          "Các đợt đã hoàn thành";
+
+        history.appendChild(
+          roundTitle
+        );
+
+
+        const rounds =
+          [...member.rounds]
+            .sort(
+              (a,b) =>
+                Number(a.round || 0) -
+                Number(b.round || 0)
+            );
+
+
+        rounds.forEach(
+          round => {
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+            item.className =
+              "round-item";
+
+
+            const left =
+              document.createElement(
+                "span"
+              );
+
+            left.textContent =
+              "Đợt " +
+              round.round +
+              " · " +
+              formatDate(
+                round.date
+              );
+
+
+            const right =
+              document.createElement(
+                "strong"
+              );
+
+            right.textContent =
+              formatMoney(
+                round.amount
+              ) +
+              "k";
+
+
+            item.appendChild(
+              left
+            );
+
+            item.appendChild(
+              right
+            );
+
+
+            history.appendChild(
+              item
+            );
+
+          }
+        );
+
+      }
+
+
+      container.appendChild(
+        row
+      );
+
+      container.appendChild(
+        history
+      );
+
+      body.appendChild(
+        container
+      );
+
+    }
+  );
+
+}
+
+
+/* ==========================================================
+   XÓA THÀNH VIÊN
+   ========================================================== */
+
+async function deleteMember(id){
+
+  const member =
+    members.find(
+      m => m.id === id
+    );
+
+
+  if(!member)
+    return;
+
+
+  const ok =
+    confirm(
+      "Bạn có chắc muốn xóa " +
+      member.name +
+      "?\n\n" +
+      "Toàn bộ lịch sử nộp tiền và các đợt đã hoàn thành sẽ bị xóa."
+    );
+
+
+  if(!ok)
+    return;
+
+
+  try{
+
+    await db
+      .collection("members")
+      .doc(id)
+      .delete();
+
+
+    delete openIds[id];
+
+  }
+
+  catch(error){
+
+    alert(
+      "Không thể xóa:\n" +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   LỖI FORM
+   ========================================================== */
+
+function showError(message){
+
+  const el =
+    document.getElementById(
+      "form-error"
+    );
+
+  el.textContent =
+    message;
+
+  el.style.display =
+    "block";
+
+}
+
+
+function clearError(){
+
+  document.getElementById(
+    "form-error"
+  ).style.display =
+    "none";
+
+}
+
+
+/* ==========================================================
+   GHI NHẬN NỘP TIỀN
+   ========================================================== */
+
+async function recordPayment(){
+
+  clearError();
+
+
+  const nameInput =
+    document.getElementById(
+      "input-name"
+    );
+
+
+  const amountInput =
+    document.getElementById(
+      "input-amount"
+    );
+
+
+  const dateInput =
+    document.getElementById(
+      "input-date"
+    );
+
+
+  const name =
+    nameInput.value.trim();
+
+
+  if(!name){
+
+    showError(
+      "Nhập tên thành viên."
+    );
+
+    nameInput.focus();
+
+    return;
+
+  }
+
+
+  if(amountInput.value === ""){
+
+    showError(
+      "Nhập số tiền."
+    );
+
+    amountInput.focus();
+
+    return;
+
+  }
+
+
+  const amount =
+    Number(
+      amountInput.value
+    );
+
+
+  if(
+    !Number.isFinite(amount) ||
+    amount < 0
+  ){
+
+    showError(
+      "Số tiền không hợp lệ."
+    );
+
+    amountInput.focus();
+
+    return;
+
+  }
+
+
+  const date =
+    dateInput.value ||
+    todayISO();
+
+
+  const existing =
+    findMember(name);
+
+
+  try{
+
+    if(existing){
+
+      const payments =
+        [
+          ...existing.payments
+        ];
+
+
+      payments.push({
+
+        amount: amount,
+
+        date: date
+
+      });
+
+
+      await db
+        .collection("members")
+        .doc(existing.id)
+        .update({
+
+          payments:
+            payments
+
+        });
+
+
+      openIds[existing.id] =
+        true;
+
+    }
+
+    else{
+
+      const ref =
+        await db
+          .collection("members")
+          .add({
+
+            name: name,
+
+            payments: [
+
+              {
+                amount: amount,
+                date: date
+              }
+
+            ],
+
+            rounds: []
+
+          });
+
+
+      openIds[ref.id] =
+        true;
+
+    }
+
+
+    nameInput.value = "";
+
+    amountInput.value = "";
+
+    dateInput.value =
+      todayISO();
+
+    nameInput.focus();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showError(
+      "Lỗi ghi dữ liệu: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   CHỈ THÊM TÊN
+   ========================================================== */
+
+async function addNameOnly(){
+
+  clearError();
+
+
+  const input =
+    document.getElementById(
+      "input-name"
+    );
+
+
+  const name =
+    input.value.trim();
+
+
+  if(!name){
+
+    showError(
+      "Nhập tên thành viên."
+    );
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  if(findMember(name)){
+
+    showError(
+      "Tên này đã tồn tại."
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    await db
+      .collection("members")
+      .add({
+
+        name: name,
+
+        payments: [],
+
+        rounds: []
+
+      });
+
+
+    input.value = "";
+
+    input.focus();
+
+  }
+
+  catch(error){
+
+    showError(
+      "Lỗi ghi dữ liệu: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   HOÀN THÀNH TẤT CẢ
+   ========================================================== */
+
+async function completeAll(){
+
+  if(!db)
+    return;
+
+
+  /*
+    Chỉ lấy những người đã nộp
+    trong đợt hiện tại
+  */
+
+  const paidMembers =
+    members.filter(
+      member =>
+        member.payments.length > 0
+    );
+
+
+  if(paidMembers.length === 0){
+
+    alert(
+      "Chưa có ai nộp tiền trong đợt hiện tại."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Tính tổng tiền đợt này
+  */
+
+  const roundTotal =
+    paidMembers.reduce(
+      (sum,member) =>
+        sum +
+        getCurrentTotal(member),
+      0
+    );
+
+
+  const ok =
+    confirm(
+      "Hoàn thành đợt thu hiện tại?\n\n" +
+
+      "Số người đã nộp: " +
+      paidMembers.length +
+      "\n" +
+
+      "Tổng tiền đợt này: " +
+      formatMoney(roundTotal) +
+      "k\n\n" +
+
+      "Sau khi hoàn thành, tất cả sẽ chuyển về trạng thái \"Chưa nộp\".\n" +
+
+      "Tiền cũ vẫn được lưu trong lịch sử."
+    );
+
+
+  if(!ok)
+    return;
+
+
+  try{
+
+    /*
+      Xác định số đợt tiếp theo
+    */
+
+    let maxRound = 0;
+
+
+    members.forEach(
+      member => {
+
+        if(
+          Array.isArray(
+            member.rounds
+          )
+        ){
+
+          member.rounds.forEach(
+            round => {
+
+              maxRound =
+                Math.max(
+                  maxRound,
+                  Number(
+                    round.round
+                  ) || 0
+                );
+
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+    const newRound =
+      maxRound + 1;
+
+
+    /*
+      Dùng Firestore batch
+      để cập nhật tất cả cùng lúc
+    */
+
+    const batch =
+      db.batch();
+
+
+    paidMembers.forEach(
+      member => {
+
+        const currentTotal =
+          getCurrentTotal(member);
+
+
+        /*
+          Ngày hoàn thành lấy ngày
+          của lần nộp cuối
+        */
+
+        let finishDate =
+          todayISO();
+
+
+        if(
+          member.payments.length > 0
+        ){
+
+          const sorted =
+            [...member.payments]
+              .sort(
+                (a,b) =>
+                  a.date.localeCompare(
+                    b.date
+                  )
+              );
+
+
+          finishDate =
+            sorted[
+              sorted.length - 1
+            ].date;
+
+        }
+
+
+        const oldRounds =
+          Array.isArray(
+            member.rounds
+          )
+            ? [...member.rounds]
+            : [];
+
+
+        /*
+          Lưu tổng tiền của người đó
+          vào đợt vừa hoàn thành
+        */
+
+        oldRounds.push({
+
+          round:
+            newRound,
+
+          amount:
+            currentTotal,
+
+          date:
+            finishDate
+
+        });
+
+
+        const ref =
+          db
+            .collection("members")
+            .doc(member.id);
+
+
+        /*
+          QUAN TRỌNG:
+          payments = []
+          => trạng thái Chưa nộp
+
+          rounds = lịch sử cũ
+          => tiền không bị mất
+        */
+
+        batch.update(
+          ref,
+          {
+
+            payments: [],
+
+            rounds:
+              oldRounds
+
+          }
+        );
+
+      }
+    );
+
+
+    await batch.commit();
+
+
+    alert(
+      "Đã hoàn thành đợt " +
+      newRound +
+      "!\n\n" +
+
+      "Số người: " +
+      paidMembers.length +
+      "\n" +
+
+      "Tổng tiền: " +
+      formatMoney(roundTotal) +
+      "k\n\n" +
+
+      "Tất cả thành viên đã chuyển về \"Chưa nộp\"."
+    );
+
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    alert(
+      "Không thể hoàn thành đợt:\n" +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   XUẤT CSV
+   ========================================================== */
+
+function exportCSV(){
+
+  if(members.length === 0){
+
+    alert(
+      "Chưa có dữ liệu."
+    );
+
+    return;
+
+  }
+
+
+  const rows = [
+
+    [
+      "Họ và tên",
+      "Trạng thái hiện tại",
+      "Tiền đợt hiện tại",
+      "Tổng tiền tất cả đợt",
+      "Số lần nộp hiện tại",
+      "Lịch sử các đợt"
+    ]
+
+  ];
+
+
+  members
+    .slice()
+    .sort(
+      (a,b) =>
+        a.name.localeCompare(
+          b.name,
+          "vi"
+        )
+    )
+    .forEach(
+      member => {
+
+        const roundHistory =
+          Array.isArray(
+            member.rounds
+          )
+            ? member.rounds
+                .sort(
+                  (a,b) =>
+                    Number(a.round || 0) -
+                    Number(b.round || 0)
+                )
+                .map(
+                  r =>
+                    "Đợt " +
+                    r.round +
+                    ": " +
+                    r.amount +
+                    "k (" +
+                    formatDate(
+                      r.date
+                    ) +
+                    ")"
+                )
+                .join(" | ")
+            : "";
+
+
+        rows.push([
+
+          member.name,
+
+          member.payments.length
+            ? "Đã nộp"
+            : "Chưa nộp",
+
+          getCurrentTotal(
+            member
+          ),
+
+          getTotal(
+            member
+          ),
+
+          member.payments.length,
+
+          roundHistory
+
+        ]);
+
+      }
+    );
+
+
+  const csv =
+    rows
+      .map(
+        row =>
+          row
+            .map(
+              value =>
+                '"' +
+                String(value)
+                  .replace(
+                    /"/g,
+                    '""'
+                  ) +
+                '"'
+            )
+            .join(",")
+      )
+      .join("\r\n");
+
+
+  const blob =
+    new Blob(
+      [
+        "\uFEFF" +
+        csv
+      ],
+      {
+        type:
+          "text/csv;charset=utf-8"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const a =
+    document.createElement(
+      "a"
+    );
+
+
+  a.href =
+    url;
+
+
+  a.download =
+    "so-quy-" +
+    todayISO() +
+    ".csv";
+
+
+  document.body.appendChild(
+    a
+  );
+
+
+  a.click();
+
+
+  a.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* ==========================================================
+   EVENT
+   ========================================================== */
+
+document
+  .getElementById(
+    "btn-add"
+  )
+  .onclick =
+  recordPayment;
+
+
+document
+  .getElementById(
+    "btn-add-only-name"
+  )
+  .onclick =
+  addNameOnly;
+
+
+document
+  .getElementById(
+    "btn-complete-all"
+  )
+  .onclick =
+  completeAll;
+
+
+document
+  .getElementById(
+    "btn-export"
+  )
+  .onclick =
+  exportCSV;
+
+
+/* ENTER */
+
+document
+  .getElementById(
+    "input-name"
+  )
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter")
+        recordPayment();
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "input-amount"
+  )
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter")
+        recordPayment();
+
+    }
+  );
+
+
+/* TÌM KIẾM */
+
+document
+  .getElementById(
+    "input-search"
+  )
+  .addEventListener(
+    "input",
+    event => {
+
+      searchTerm =
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* BỘ LỌC */
+
+document
+  .querySelectorAll(
+    ".filters button"
+  )
+  .forEach(
+    button => {
+
+      button.onclick = () => {
+
+        document
+          .querySelectorAll(
+            ".filters button"
+          )
+          .forEach(
+            b =>
+              b.classList.remove(
+                "active"
+              )
+          );
+
+
+        button.classList.add(
+          "active"
+        );
+
+
+        filter =
+          button.dataset.filter;
+
+
+        render();
+
+      };
+
+    }
+  );
+
+
+/* ==========================================================
+   KHỞI ĐỘNG
+   ========================================================== */
+
+document
+  .getElementById(
+    "input-date"
+  )
+  .value =
+  todayISO();
+
+
+initFirebase();
+
+</script>
+
+</body>
+</html>
